@@ -16,31 +16,27 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
       - name: Accept Android SDK Licenses
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      - name: Extract Project and Generate Gradlew
+      - name: Extract Project and Setup Gradle 8.2
         run: |
           mkdir -p project_source
           unzip -o Kamalpur_Bites_Android_Starter-3.zip -d project_source
           ROOT_DIR=$(find project_source -name "settings.gradle*" -exec dirname {} \;)
           echo "PROJECT_ROOT=$ROOT_DIR" >> $GITHUB_ENV
           cd $ROOT_DIR
-          gradle wrapper
+          gradle wrapper --gradle-version 8.2
           chmod +x gradlew
 
       - name: Build Debug APK
         run: |
           cd $PROJECT_ROOT
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Kamalpur-Bites-APK
           path: project_source/**/build/outputs/apk/debug/*.apk
-
