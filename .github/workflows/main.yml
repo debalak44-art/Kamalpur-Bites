@@ -31,9 +31,9 @@ jobs:
           chmod +x gradlew
           echo "kotlin.jvm.target.validation.mode=warning" >> gradle.properties
           
-          # Fix unresolved singleLine reference in Kotlin files
-          find . -name "MainActivity.kt" -exec sed -i 's/singleLine = true/maxLines = 1/g' {} +
-          find . -name "MainActivity.kt" -exec sed -i 's/singleLine = false/maxLines = Int.MAX_VALUE/g' {} +
+          # Fix unresolved singleLine reference
+          find . -name "*.kt" -exec sed -i 's/singleLine = true/maxLines = 1/g' {} +
+          find . -name "*.kt" -exec sed -i 's/singleLine = false/maxLines = Int.MAX_VALUE/g' {} +
 
       - name: Build Debug APK
         run: |
