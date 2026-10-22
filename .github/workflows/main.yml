@@ -1,4 +1,4 @@
-name: Inspect and Build APK
+name: Build Kamalpur Bites APK
 
 on:
   workflow_dispatch:
@@ -10,13 +10,29 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Extract Project ZIP
-        run: |
-          mkdir -p project_dir
-          unzip -o Kamalpur_Bites_Android_Starter-3.zip -d project_dir
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Show Files in ZIP
-        run: |
-          echo "=== ZIP FILE LIST ==="
-          find project_dir -maxdepth 3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
+      - name: Extract Project
+        run: |
+          mkdir -p project_source
+          unzip -o Kamalpur_Bites_Android_Starter-3.zip -d project_source
+          ROOT_DIR=$(find project_source -name "settings.gradle*" -exec dirname {} \;)
+          echo "PROJECT_ROOT=$ROOT_DIR" >> $GITHUB_ENV
+
+      - name: Build Debug APK
+        run: |
+          cd $PROJECT_ROOT
+          gradle assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kamalpur-Bites-APK
+          path: project_source/**/build/outputs/apk/debug/*.apk
