@@ -33,11 +33,10 @@ jobs:
       - name: Build Debug APK
         run: |
           cd $PROJECT_ROOT
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon -Dkotlin.jvm.target.validation.mode=warning -Pkotlin.compiler.jvmTarget=1.8
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Kamalpur-Bites-APK
           path: project_source/**/build/outputs/apk/debug/*.apk
-
