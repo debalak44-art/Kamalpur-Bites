@@ -20,7 +20,7 @@ jobs:
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      - name: Extract Project and Fix Config
+      - name: Extract Project and Fix Code
         run: |
           mkdir -p project_source
           unzip -o Kamalpur_Bites_Android_Starter-3.zip -d project_source
@@ -30,6 +30,10 @@ jobs:
           gradle wrapper --gradle-version 8.9
           chmod +x gradlew
           echo "kotlin.jvm.target.validation.mode=warning" >> gradle.properties
+          
+          # Fix unresolved singleLine reference in Kotlin files
+          find . -name "MainActivity.kt" -exec sed -i 's/singleLine = true/maxLines = 1/g' {} +
+          find . -name "MainActivity.kt" -exec sed -i 's/singleLine = false/maxLines = Int.MAX_VALUE/g' {} +
 
       - name: Build Debug APK
         run: |
@@ -41,3 +45,4 @@ jobs:
         with:
           name: Kamalpur-Bites-APK
           path: project_source/**/build/outputs/apk/debug/*.apk
+
