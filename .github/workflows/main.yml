@@ -16,20 +16,23 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Extract Project
+      - name: Extract Project and Setup Gradle Wrapper
         run: |
           mkdir -p project_source
           unzip -o Kamalpur_Bites_Android_Starter-3.zip -d project_source
           ROOT_DIR=$(find project_source -name "settings.gradle*" -exec dirname {} \;)
           echo "PROJECT_ROOT=$ROOT_DIR" >> $GITHUB_ENV
+          cd $ROOT_DIR
+          gradle wrapper
 
       - name: Build Debug APK
         run: |
           cd $PROJECT_ROOT
-          gradle assembleDebug --stacktrace
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
